@@ -31,6 +31,12 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # Our apps
+    'chat',
+
+    # Installed apps
+    'channels',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -68,7 +74,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'Morse.wsgi.application'
+# WSGI_APPLICATION = 'Morse.wsgi.application'
+ASGI_APPLICATION = 'Morse.asgi.application'
 
 
 # Database
