@@ -10,8 +10,13 @@
             src: url('{% static 'fonts/Vazir.ttf' %}');
         }
 
-        body, input {
-            font-family: vzir;
+        @font-face {
+            font-family: ubuntu;
+            src: url('{% static 'fonts/UbuntuMono-regular.ttf' %}');
+        }
+
+        body, input, textarea {
+            font-family: ubuntu;
         }
 
         #chat-message-input {
@@ -24,6 +29,11 @@
             padding-top: 10px
         }
 
+        #chat-message-input::selection {
+            background-color: #94dcff;
+            color: black;
+        }
+
         #chat-log {
             background-color: silver;
             background-color: deepskyblue;
@@ -33,10 +43,16 @@
             outline: none;
         }
 
+        #chat-log::selection {
+            background-color: white;
+        }
+
         #chat-message-submit {
             width: 730px;
+            height: 40px;
             font-size: 25px;
             background-color: cornflowerblue;
+            border: 5px #0055d0 wave;
             border-radius: 10px;
             outline: none;
         }
@@ -53,22 +69,20 @@
 <body>
 
 <div style="text-align: center;margin: auto">
-    <h2><b>Group: </b>{{ room_name }}</h2>
-    <textarea id="chat-log" cols="50" rows="12" readonly></textarea><br>
-    <input id="chat-message-input" type="text" placeholder="Write a message..." size="100"><br><br>
-    <input id="chat-message-submit" type="button" value="Send"><br>
+    <div style="display: inline-block">
+        <h3 style="text-align: left">Group: {{ room_name }}</h3>
+        <h2 style="text-align: left"><b></b>{{ username }}:</h2>
+        <textarea id="chat-log" cols="55" rows="15" readonly></textarea><br>
+        <input id="chat-message-input" type="text" placeholder="Write a message..." size="100" maxlength="60"><br><br>
+        <input id="chat-message-submit" type="button" value="Send"><br>
+    </div>
 </div>
 {{ room_name|json_script:"room-name" }}
+{{ username|json_script:"user-name" }}
 <script>
     const roomName = JSON.parse(document.getElementById('room-name').textContent);
-
-    const chatSocket = new WebSocket(
-        'ws://'
-        + window.location.host
-        + '/ws/chat/'
-        + roomName
-        + '/'
-    );
+    const userName = JSON.parse(document.getElementById('user-name').textContent);
+    const chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat/${roomName}/${userName}/`)
 
     chatSocket.onmessage = function (e) {
         const data = JSON.parse(e.data);
@@ -88,10 +102,8 @@
 
     document.querySelector('#chat-message-submit').onclick = function (e) {
         const messageInputDom = document.querySelector('#chat-message-input');
-        const message = messageInputDom.value;
-        chatSocket.send(JSON.stringify({
-            'message': message
-        }));
+        const message = `${userName}: ${messageInputDom.value}`;
+        chatSocket.send(JSON.stringify({'message': message}));
         messageInputDom.value = '';
     };
 </script>
