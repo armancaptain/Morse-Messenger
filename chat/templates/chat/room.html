@@ -71,10 +71,13 @@
 <div style="text-align: center;margin: auto">
     <div style="display: inline-block">
         <h3 style="text-align: left">Group: {{ room_name }}</h3>
-        <h2 style="text-align: left"><b></b>{{ username }}:</h2>
+        <h2 style="text-align: left;"><b></b>{{ username }}:</h2>
         <textarea id="chat-log" cols="55" rows="15" readonly></textarea><br>
         <input id="chat-message-input" type="text" placeholder="Write a message..." size="100" maxlength="60"><br><br>
         <input id="chat-message-submit" type="button" value="Send"><br>
+        <a href="https://github.com/rezarezaeedev"><h6 style="text-align: right"
+                                                       title="Programmed by python-django-channels, Author:Reza Rezaee">
+            About this messenger</h6></a>
     </div>
 </div>
 {{ room_name|json_script:"room-name" }}
@@ -102,8 +105,15 @@
 
     document.querySelector('#chat-message-submit').onclick = function (e) {
         const messageInputDom = document.querySelector('#chat-message-input');
-        const message = `${userName}: ${messageInputDom.value}`;
-        chatSocket.send(JSON.stringify({'message': message}));
+        var messageInputDomText = messageInputDom.value.trim();
+        if (messageInputDomText !== '') {
+            const message = `${userName}: ${messageInputDomText}`;
+            chatSocket.send(JSON.stringify({'message': message}));
+        } else {
+
+            document.querySelector('#chat-message-input').focus();
+            alert('Please write anythings...');
+        }
         messageInputDom.value = '';
     };
 </script>
